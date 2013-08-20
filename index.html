@@ -3,52 +3,9 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <style>
-            .inlineSlider{
-                position: relative;
-                margin: 50px;
-            }
-            .inlineSlider .track{
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 22px;
-            }
-            .inlineSlider .track .line{
-                height: 2px;
-                background-color: #000000;
-                margin-top: 10px;
-            }
-            .inlineSlider .slider{
-                position: absolute;
-            }
-            .inlineSlider .slider input{
-                float: left;
-                background: rgba(255, 255, 255, .9);
-                border: 1px solid #000000;
-                text-align: center;
-                height: 18px;
-            }
-            .inlineSlider .slider .arrow{
-                float: left;
-                width: 0; 
-                height: 0;
-            }
-            .inlineSlider .slider .arrow-right {
-                border-top: 11px solid transparent;
-                border-bottom: 11px solid transparent;
-                border-left: 11px solid black;
-                cursor: move;
-            }
-            .inlineSlider .slider .arrow-left {
-                border-top: 11px solid transparent;
-                border-bottom: 11px solid transparent; 
-                border-right:11px solid black; 
-                cursor: move;
-            }
-        </style>
+        <link href="css/inlineSlider.jquery.css" media="all" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script type="text/javascript" src="js/inlineSlider.jquery.js"></script>
+        <script type="text/javascript" src="js/inlineSlider.jquery.min.js"></script>
         <script type="text/javascript">
             $(function() {
                 $('.range').inlineSlider({
