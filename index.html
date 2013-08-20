@@ -10,145 +10,54 @@
             }
             .inlineSlider .track{
                 position: absolute;
+                left: 0;
+                top: 0;
+                height: 22px;
+            }
+            .inlineSlider .track .line{
                 height: 2px;
                 background-color: #000000;
-                left: 0;
-                top: 10px;
+                margin-top: 10px;
             }
             .inlineSlider .slider{
                 position: absolute;
             }
             .inlineSlider .slider input{
+                float: left;
                 background: rgba(255, 255, 255, .9);
                 border: 1px solid #000000;
                 text-align: center;
+                height: 18px;
+            }
+            .inlineSlider .slider .arrow{
+                float: left;
+                width: 0; 
+                height: 0;
+            }
+            .inlineSlider .slider .arrow-right {
+                border-top: 11px solid transparent;
+                border-bottom: 11px solid transparent;
+                border-left: 11px solid black;
+                cursor: move;
+            }
+            .inlineSlider .slider .arrow-left {
+                border-top: 11px solid transparent;
+                border-bottom: 11px solid transparent; 
+                border-right:11px solid black; 
+                cursor: move;
             }
         </style>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="js/inlineSlider.jquery.js"></script>
         <script type="text/javascript">
-
-            $.fn.inlineSlider = function() {
-                var slider = {
-                    init: function(input, options) {
-                        var defaults = {
-                            width: 200,
-                            inputWidth: 40,
-                            min: 0,
-                            max: 1000
-                        };
-                        this.options = $.extend(defaults, options);
-
-                        this.$input = $(input);
-                        var $slider = $('<div class="inlineSlider"><div class="slider" /></div>');
-                        this.$input.wrap($slider);
-
-                        this.$slider = this.$input.parents('.slider:first');
-                        this.$track = $('<div class="track" />');
-                        this.$slider.before(this.$track);
-
-                        this.$input.css('width', this.options.inputWidth + 'px');
-                        this.$track.css('width', this.options.width + 'px');
-
-                        this.$input.attr('unselectable', 'on');
-
-                        this.registerEvents();
-                        this.jumpToCurrentValue();
-                    },
-                    registerEvents: function() {
-                        var self = this;
-                        this.$input.bind('change', function() {
-                            self.jumpToCurrentValue();
-                        });
-                        this.$slider.bind('mousedown', function(event) {
-                            self.startDragging(event);
-                        });
-                    },
-                    startDragging: function(event) {
-                        var self = this;
-                        this.offset = [event.pageX, event.pageY];
-                        this.pos = this.$slider.position();
-                        $(window).bind('mouseup.inlineSlider', function(event) {
-                            self.stopDragging(event);
-                        });
-                        $(window).bind('mousemove.inlineSlider', function(event) {
-                            self.calculateDelta(event);
-                        });
-
-                        this.$input.focus();
-                    },
-                    stopDragging: function() {
-                        $(window).unbind('mouseup.inlineSlider mousemove.inlineSlider');
-                        this.offset = null;
-                        this.pos = null;
-                    },
-                    calculateDelta: function(event) {
-                        var delta = event.pageX - this.offset[0];
-                        var position = this.pos.left + delta;
-                        this.setPosition(position);
-                        var value = this.calculateValue(position);
-                        this.updateInputValue(value);
-                    },
-                    jumpToCurrentValue: function() {
-                        var value = this.$input.val();
-                        this.setValue(value);
-                    },
-                    setValue: function(value) {
-                        value = parseInt(value);
-                        if (value <= this.options.min) {
-                            value = this.options.min;
-                        }
-
-                        if (value >= this.options.max) {
-                            value = this.options.max;
-                        }
-
-                        var position = this.calculatePosition(value);
-                        this.setPosition(position);
-                        this.updateInputValue(value);
-                    },
-                    updateInputValue: function(value) {
-                        this.$input.val(value);
-                    },
-                    calculatePosition: function(value) {
-                        var range = this.options.max - this.options.min;
-                        var width = this.$track.width();
-                        var ratio = width / range;
-                        return value * ratio - this.$input.width() / 2;
-                    },
-                    calculateValue: function(position) {
-                        var range = this.options.max - this.options.min;
-                        var width = this.$track.width();
-                        var ratio = range / width;
-                        var value = (position + this.$input.width() / 2) * ratio;
-
-                        value = parseInt(value);
-                        if (value <= this.options.min) {
-                            value = this.options.min;
-                        }
-
-                        if (value >= this.options.max) {
-                            value = this.options.max;
-                        }
-
-                        return parseInt(value);
-                    },
-                    setPosition: function(position) {
-                        var offset = this.$slider.width() / 2;
-                        position = Math.max(0 - offset, position);
-                        position = Math.min(position, this.$track.width() - offset);
-                        this.$slider.css('left', position + 'px');
-                    }
-                };
-                return this.each(function(options) {
-                    slider.init(this, options);
-                });
-            };
             $(function() {
-                $('.range').inlineSlider();
+                $('.range').inlineSlider({
+                    width: 500
+                });
             });
         </script>
     </head>
     <body>
-        <input type="text" class="range" value="50" />
+        <input type="text" class="range" value="50" data-min="0" data-max="300" data-step="1" />
     </body>
 </html>
