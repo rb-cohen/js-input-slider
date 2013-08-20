@@ -7,51 +7,45 @@ $.fn.inlineSlider = function(options) {
                     inputWidth: 40,
                     min: 0,
                     max: 1000,
-                    step: 1
+                    step: 1,
+                    onChange: null
                 };
                 this.options = $.extend(defaults, options);
-
                 this.$input = $(input);
                 var $slider = $('<div class="inlineSlider"><div class="slider" /></div>');
                 this.$input.wrap($slider);
                 this.$input.before('<div class="arrow arrow-left" />');
                 this.$input.after('<div class="arrow arrow-right" />');
-
                 this.$slider = this.$input.parent('.slider');
                 this.$slider.wrap('<div class="container" />');
                 this.$track = $('<div class="track"><div class="line" /></div>');
                 this.$slider.before(this.$track);
-
                 this.$input.css('width', this.options.inputWidth + 'px');
                 this.$track.css('width', this.options.width + 'px');
-
                 var inputMin = this.$input.attr('data-min');
                 if (inputMin)
                     this.options.min = parseFloat(inputMin);
-
                 var inputMax = this.$input.attr('data-max');
                 if (inputMax)
                     this.options.max = parseFloat(inputMax);
-
                 var inputStep = this.$input.attr('data-step');
                 if (inputStep)
                     this.options.step = parseFloat(inputStep);
-
                 this.registerEvents();
                 this.jumpToCurrentValue();
             },
             registerEvents: function() {
                 var self = this;
-
                 this.$input.bind('change', function() {
                     self.jumpToCurrentValue();
+                    if (self.options.callback) {
+                        self.triggerChange();
+                    }
                 });
-
                 this.$slider.find('.arrow').bind('mousedown', function(event) {
                     event.preventDefault();
                     self.startDragging(event);
                 });
-
                 this.$track.bind('mousedown', function(event) {
                     event.preventDefault();
                     self.startScrolling(event);
@@ -67,7 +61,6 @@ $.fn.inlineSlider = function(options) {
                 $(document).bind('mousemove.inlineSlider', function(event) {
                     self.calculateDragDelta.call(self, event);
                 });
-
                 this.$input.focus();
             },
             stopDragging: function() {
@@ -85,15 +78,12 @@ $.fn.inlineSlider = function(options) {
             startScrolling: function(event) {
                 var self = this;
                 this.scrollTo = [event.pageX, event.pageY];
-
                 $(document).bind('mouseup.inlineSlider', function(event) {
                     self.stopScrolling.call(self, event);
                 });
-
                 $(document).bind('mousemove.inlineSlider', function(event) {
                     self.scrollTo = [event.pageX, event.pageY];
                 });
-
                 this.scroll();
             },
             stopScrolling: function() {
@@ -106,13 +96,10 @@ $.fn.inlineSlider = function(options) {
                     var self = this;
                     var offset = this.$slider.offset();
                     var position = this.$slider.position();
-
                     var max = this.$track.width() / 10;
                     var delta = this.scrollTo[0] - offset.left - this.$slider.width() / 2;
-
                     var move = (delta < 0) ? Math.max(delta, max * -1) : Math.min(delta, max);
                     this.setPosition(position.left + move);
-
                     this.scrollTimeout = setTimeout(function() {
                         self.scroll();
                     }, 150);
@@ -135,15 +122,26 @@ $.fn.inlineSlider = function(options) {
                 var position = this.calculatePosition(value);
                 this.setPosition(position);
             },
+            getValue: function() {
+                return parseFloat(this.$input.val());
+            },
             updateInputValue: function(value) {
                 if (this.options.step) {
                     var remainder = value % this.options.step;
                     value = value - remainder;
                 }
 
-                var currentValue = parseFloat(this.$input.val());
+                var currentValue = this.getValue();
                 if (currentValue !== value) {
-                    this.$input.val(value).trigger('change');
+                    this.$input.val(value);
+                    this.triggerChange();
+                }
+            },
+            triggerChange: function() {
+                if (this.options.callback) {
+                    this.options.callback(this.getValue(), this);
+                } else {
+                    this.$input.trigger('change');
                 }
             },
             calculatePosition: function(value) {
@@ -157,7 +155,6 @@ $.fn.inlineSlider = function(options) {
                 var width = this.$track.width();
                 var ratio = range / width;
                 var value = (position + this.$slider.width() / 2) * ratio;
-
                 value = parseFloat(value);
                 if (value <= this.options.min) {
                     value = this.options.min;
@@ -174,12 +171,10 @@ $.fn.inlineSlider = function(options) {
                 position = Math.max(0 - offset, position);
                 position = Math.min(position, this.$track.width() - offset);
                 this.$slider.css('left', position + 'px');
-
                 var value = this.calculateValue(position);
                 this.updateInputValue(value);
             }
         };
-
         slider.init(this, options);
     });
 };

@@ -32,19 +32,24 @@
         <fieldset>
             <label>Train</label>
             <input type="text" id="distance" value="0" data-min="0" data-max="100" data-step="1" />
-            <img id="train" src="images/train.png" />
+            <div id="track" style="width: 800px; overflow: hidden; border-left: 5px solid #000000; border-bottom: 2px dashed grey; border-right: 5px solid #000000; ">
+                <img id="train" src="images/train.png" style="float: left;" />
+            </div>
         </fieldset>
         <script type="text/javascript">
             $(function() {
                 function moveTrain() {
-                    var distance = $('#distance').val();
-                    $('#train').css('margin-left', distance + '%');
+                    var $track = $('#track');
+                    var $train = $('#train');
+                    var distance = $track.width() / 100 * $('#distance').val();
+                    $train.css('margin-left', (distance - $train.width() / 2) + 'px');
                 }
 
                 moveTrain();
                 $('#distance').inlineSlider({
-                    width: 500
-                }).bind('change', moveTrain);
+                    width: 500,
+                    callback: moveTrain
+                });
             });
         </script>
     </body>
