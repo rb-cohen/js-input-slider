@@ -5,16 +5,47 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href="css/inlineSlider.jquery.css" media="all" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script type="text/javascript" src="js/inlineSlider.jquery.min.js"></script>
-        <script type="text/javascript">
-            $(function() {
-                $('.range').inlineSlider({
-                    width: 500
-                });
-            });
-        </script>
+        <script type="text/javascript" src="js/inlineSlider.jquery.js"></script>
     </head>
     <body>
-        <input type="text" class="range" value="50" data-min="0" data-max="300" data-step="1" />
+        <fieldset>
+            <label>Color</label>
+            <input type="text" id="red" value="0" data-min="0" data-max="255" data-step="1" />
+            <input type="text" id="green" value="0" data-min="0" data-max="255" data-step="1" />
+            <input type="text" id="blue" value="0" data-min="0" data-max="255" data-step="1" />
+            <div id="color" style="width: 200px; height: 200px; background: rgb(0, 0, 0); margin-top: 20px;" />
+        </fieldset>
+        <script type="text/javascript">
+            $(function() {
+                function updateColor() {
+                    var colors = [$('#red').val(), $('#green').val(), $('#blue').val()];
+                    $('#color').css('background', 'rgb(' + colors.join(', ') + ')');
+                }
+
+                updateColor();
+                $('#red, #green, #blue').inlineSlider({
+                    width: 500
+                }).bind('change', updateColor);
+            });
+        </script>
+
+        <fieldset>
+            <label>Train</label>
+            <input type="text" id="distance" value="0" data-min="0" data-max="100" data-step="1" />
+            <img id="train" src="images/train.png" />
+        </fieldset>
+        <script type="text/javascript">
+            $(function() {
+                function moveTrain() {
+                    var distance = $('#distance').val();
+                    $('#train').css('margin-left', distance + '%');
+                }
+
+                moveTrain();
+                $('#distance').inlineSlider({
+                    width: 500
+                }).bind('change', moveTrain);
+            });
+        </script>
     </body>
 </html>
