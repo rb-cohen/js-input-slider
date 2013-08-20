@@ -1,6 +1,6 @@
-.inlineSlider{
+.inlineSlider .container{
     position: relative;
-    margin: 50px;
+    height: 22px;
 }
 .inlineSlider .track{
     position: absolute;
