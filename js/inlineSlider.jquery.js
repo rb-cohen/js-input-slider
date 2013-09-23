@@ -8,7 +8,12 @@ $.fn.inlineSlider = function(options) {
                     min: 0,
                     max: 1000,
                     step: 1,
-                    onChange: null
+                    onChange: null,
+                    onMove: null,
+                    onDragStart: null,
+                    onDragEnd: null,
+                    onScrollStart: null,
+                    onScrollEnd: null
                 };
                 this.options = $.extend(defaults, options);
                 this.$input = $(input);
@@ -38,9 +43,7 @@ $.fn.inlineSlider = function(options) {
                 var self = this;
                 this.$input.bind('change', function() {
                     self.jumpToCurrentValue();
-                    if (self.options.callback) {
-                        self.triggerChange();
-                    }
+                    self.trigger('onChange');
                 });
                 this.$slider.find('.arrow').bind('mousedown', function(event) {
                     event.preventDefault();
@@ -55,6 +58,9 @@ $.fn.inlineSlider = function(options) {
                 var self = this;
                 this.offset = [event.pageX, event.pageY];
                 this.pos = this.$slider.position();
+
+                this.trigger('onDragStart');
+
                 $(document).bind('mouseup.inlineSlider', function(event) {
                     self.stopDragging.call(self, event);
                 });
@@ -67,6 +73,9 @@ $.fn.inlineSlider = function(options) {
                 $(document).unbind('mouseup.inlineSlider mousemove.inlineSlider');
                 this.offset = null;
                 this.pos = null;
+
+                this.trigger('onDragEnd');
+                this.trigger('onChange');
             },
             calculateDragDelta: function(event) {
                 if (this.offset) {
@@ -78,6 +87,9 @@ $.fn.inlineSlider = function(options) {
             startScrolling: function(event) {
                 var self = this;
                 this.scrollTo = [event.pageX, event.pageY];
+                
+                this.trigger('onScrollStart');
+
                 $(document).bind('mouseup.inlineSlider', function(event) {
                     self.stopScrolling.call(self, event);
                 });
@@ -90,6 +102,9 @@ $.fn.inlineSlider = function(options) {
                 $(document).unbind('mouseup.inlineSlider mousemove.inlineSlider');
                 this.scrollTo = null;
                 clearTimeout(this.scrollTimeout);
+                
+                this.trigger('onScrollEnd');
+                this.trigger('onChange');
             },
             scroll: function() {
                 if (this.scrollTo) {
@@ -134,14 +149,12 @@ $.fn.inlineSlider = function(options) {
                 var currentValue = this.getValue();
                 if (currentValue !== value) {
                     this.$input.val(value);
-                    this.triggerChange();
+                    this.trigger('onMove');
                 }
             },
-            triggerChange: function() {
-                if (this.options.callback) {
-                    this.options.callback(this.getValue(), this);
-                } else {
-                    this.$input.trigger('change');
+            trigger: function(event) {
+                if (this.options[event]) {
+                    this.options[event](this);
                 }
             },
             calculatePosition: function(value) {

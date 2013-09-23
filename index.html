@@ -10,9 +10,9 @@
     <body>
         <fieldset>
             <label>Color</label>
-            <input type="text" id="red" value="0" data-min="0" data-max="255" data-step="1" />
-            <input type="text" id="green" value="0" data-min="0" data-max="255" data-step="1" />
-            <input type="text" id="blue" value="0" data-min="0" data-max="255" data-step="1" />
+            <input type="text" id="red" value="100" data-min="0" data-max="255" data-step="1" />
+            <input type="text" id="green" value="200" data-min="0" data-max="255" data-step="1" />
+            <input type="text" id="blue" value="150" data-min="0" data-max="255" data-step="1" />
             <div id="color" style="width: 200px; height: 200px; background: rgb(0, 0, 0); margin-top: 20px;" />
         </fieldset>
         <script type="text/javascript">
@@ -24,8 +24,9 @@
 
                 updateColor();
                 $('#red, #green, #blue').inlineSlider({
-                    width: 500
-                }).bind('change', updateColor);
+                    width: 500,
+                    onMove: updateColor
+                });
             });
         </script>
 
@@ -42,14 +43,16 @@
                     var $track = $('#track');
                     var $train = $('#train');
                     var distance = $track.width() / 100 * $('#distance').val();
-                    $train.css('margin-left', (distance - $train.width() / 2) + 'px');
+                    $train.animate({ 'margin-left' : (distance - $train.width() / 2) + 'px'}, 1000);
                 }
 
                 moveTrain();
                 $('#distance').inlineSlider({
                     width: 500,
-                    callback: moveTrain
+                    onChange: moveTrain
                 });
+                
+                console.log($('#distance').inlineSlider('getInstance'));
             });
         </script>
     </body>
