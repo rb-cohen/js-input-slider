@@ -87,7 +87,7 @@ $.fn.inlineSlider = function(options) {
             startScrolling: function(event) {
                 var self = this;
                 this.scrollTo = [event.pageX, event.pageY];
-                
+
                 this.trigger('onScrollStart');
 
                 $(document).bind('mouseup.inlineSlider', function(event) {
@@ -102,7 +102,7 @@ $.fn.inlineSlider = function(options) {
                 $(document).unbind('mouseup.inlineSlider mousemove.inlineSlider');
                 this.scrollTo = null;
                 clearTimeout(this.scrollTimeout);
-                
+
                 this.trigger('onScrollEnd');
                 this.trigger('onChange');
             },
@@ -112,7 +112,7 @@ $.fn.inlineSlider = function(options) {
                     var offset = this.$slider.offset();
                     var position = this.$slider.position();
                     var max = this.$track.width() / 10;
-                    var delta = this.scrollTo[0] - offset.left - this.$slider.width() / 2;
+                    var delta = this.scrollTo[0] - offset.left - this.$slider.outerWidth() / 2;
                     var move = (delta < 0) ? Math.max(delta, max * -1) : Math.min(delta, max);
                     this.setPosition(position.left + move);
                     this.scrollTimeout = setTimeout(function() {
@@ -121,10 +121,13 @@ $.fn.inlineSlider = function(options) {
                 }
             },
             jumpToCurrentValue: function() {
-                var value = this.$input.val();
-                this.setValue(value);
+                var value = this.parseValue(this.$input.val());
+                var position = this.calculatePosition(value);
+
+                this.moveSliderTo(position);
+                this.$input.val(value);
             },
-            setValue: function(value) {
+            parseValue: function(value) {
                 value = parseFloat(value);
                 if (value <= this.options.min) {
                     value = this.options.min;
@@ -134,17 +137,18 @@ $.fn.inlineSlider = function(options) {
                     value = this.options.max;
                 }
 
-                var position = this.calculatePosition(value);
-                this.setPosition(position);
+                if (this.options.step) {
+                    var remainder = value % this.options.step;
+                    value = value - remainder;
+                }
+
+                return value;
             },
             getValue: function() {
                 return parseFloat(this.$input.val());
             },
             updateInputValue: function(value) {
-                if (this.options.step) {
-                    var remainder = value % this.options.step;
-                    value = value - remainder;
-                }
+                value = this.parseValue(value);
 
                 var currentValue = this.getValue();
                 if (currentValue !== value) {
@@ -161,13 +165,13 @@ $.fn.inlineSlider = function(options) {
                 var range = this.options.max - this.options.min;
                 var width = this.$track.width();
                 var ratio = width / range;
-                return value * ratio - this.$slider.width() / 2;
+                return value * ratio - this.$slider.outerWidth() / 2;
             },
             calculateValue: function(position) {
                 var range = this.options.max - this.options.min;
                 var width = this.$track.width();
                 var ratio = range / width;
-                var value = (position + this.$slider.width() / 2) * ratio;
+                var value = (position + this.$slider.outerWidth() / 2) * ratio;
                 value = parseFloat(value);
                 if (value <= this.options.min) {
                     value = this.options.min;
@@ -180,14 +184,19 @@ $.fn.inlineSlider = function(options) {
                 return value;
             },
             setPosition: function(position) {
-                var offset = this.$slider.width() / 2;
+                var offset = this.$slider.outerWidth() / 2;
                 position = Math.max(0 - offset, position);
                 position = Math.min(position, this.$track.width() - offset);
-                this.$slider.css('left', position + 'px');
+
                 var value = this.calculateValue(position);
+                this.moveSliderTo(position);
                 this.updateInputValue(value);
+            },
+            moveSliderTo: function(position) {
+                this.$slider.css('left', position + 'px');
             }
         };
+
         slider.init(this, options);
     });
 };

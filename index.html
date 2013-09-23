@@ -30,29 +30,30 @@
             });
         </script>
 
-        <fieldset>
+        <fieldset id="train-container" style="display: none">
             <label>Train</label>
-            <input type="text" id="distance" value="0" data-min="0" data-max="100" data-step="1" />
+            <input type="text" id="distance" value="50" data-min="0" data-max="100" data-step="5" />
             <div id="track" style="width: 800px; overflow: hidden; border-left: 5px solid #000000; border-bottom: 2px dashed grey; border-right: 5px solid #000000; ">
                 <img id="train" src="images/train.png" style="float: left;" />
             </div>
         </fieldset>
         <script type="text/javascript">
             $(function() {
+                $('#train-container').show();
+
                 function moveTrain() {
                     var $track = $('#track');
                     var $train = $('#train');
                     var distance = $track.width() / 100 * $('#distance').val();
-                    $train.animate({ 'margin-left' : (distance - $train.width() / 2) + 'px'}, 1000);
+                    $train.animate({'margin-left': (distance - $train.width() / 2) + 'px'}, 1000);
                 }
-
+                
                 moveTrain();
+
                 $('#distance').inlineSlider({
                     width: 500,
                     onChange: moveTrain
                 });
-                
-                console.log($('#distance').inlineSlider('getInstance'));
             });
         </script>
     </body>
